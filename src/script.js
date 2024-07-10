@@ -1,6 +1,7 @@
 import * as Three from "three";
 import gsap from "gsap";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 const renderer = new Three.WebGLRenderer({ antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
@@ -41,7 +42,7 @@ const rotations = {
 camera.position.set(positions.home.x, positions.home.y, positions.home.z);
 camera.rotation.set(rotations.home.x, rotations.home.y, rotations.home.z);
 
-const light = new Three.DirectionalLight(0xEC8CFF, 1);
+const light = new Three.DirectionalLight(0xffffff, 1);
 light.position.set(2, 10, 7.5);
 scene.add(light);
 
@@ -50,7 +51,7 @@ const gltfLoader = new GLTFLoader();
 const excludedObjectNames = ['Plane019_Material010_0', 'Plane005__0'];
 const boundingBoxes = [];
 
-gltfLoader.load("./src/assets/scene.gltf", (gltf) => {
+gltfLoader.load("./cobaobject/untitled.gltf", (gltf) => {
     const model = gltf.scene;
     scene.add(model);
     mod = model;
@@ -62,9 +63,9 @@ gltfLoader.load("./src/assets/scene.gltf", (gltf) => {
 
             const box = new Three.Box3().setFromObject(object);
             boundingBoxes.push({ box: box, exclude: object.excludeFromCollision || false });
-            const color = object.excludeFromCollision ? 0xff0000 : 0xffff00;
-            const helper = new Three.Box3Helper(box, color);
-            scene.add(helper);
+            // const color = object.excludeFromCollision ? 0xff0000 : 0xffff00;
+            // const helper = new Three.Box3Helper(box, color);
+            // scene.add(helper);
 
             console.log('Object name:', object.name);
         }
