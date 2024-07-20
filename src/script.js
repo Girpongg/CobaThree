@@ -1,106 +1,105 @@
 import * as Three from "three";
 import gsap from "gsap";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
-import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
-class CameraController{
-	constructor(camera, target){
-		this._camera = camera;
-		this._target = target;
-		this._xmove = 0;
-		this._ymove = 0;
 
-		this._prevX = 0;
-		this._prevY = 0;
-		this._isHold = false;
+class CameraController {
+    constructor(camera, target) {
+        this._camera = camera;
+        this._target = target;
+        this._xmove = 0;
+        this._ymove = 0;
 
-		this._Initialize();
-	}
+        this._prevX = 0;
+        this._prevY = 0;
+        this._isHold = false;
 
-	_Initialize(){
-		// WASD
-		window.addEventListener('keydown', (e)=>{
-			let v = new Three.Vector3();
-			v.copy(this._target).sub(this._camera.position);
-			
-			let u = new Three.Vector3(0, 1, 0);
-			let w = new Three.Vector3();
-			w.copy(v).cross(u)
-		
-			v.multiplyScalar(0.01);
-			w.multiplyScalar(0.01);
-		
-			if(e.key == 'w'){
-				this._camera.position.add(v);
-				this._target.add(v);
-			}
-			if(e.key == 's'){
-				this._camera.position.sub(v);
-				this._target.sub(v);
-			}
-			if(e.key == 'a'){
-				this._camera.position.sub(w);
-				this._target.sub(w);
-			}
-			if(e.key == 'd'){
-				this._camera.position.add(w);
-				this._target.add(w);
-			}
-		});
+        this._Initialize();
+    }
 
-		// Left & Right View
-		window.addEventListener('mousedown', (e)=>{
-			this._isHold = true;
-		})
-		window.addEventListener('mouseup', (e)=>{
-			this._isHold = false;
-		})
-		window.addEventListener('mousemove', (e)=>{
-			if(this._isHold){
-				this._xmove += (e.clientX - this._prevX);
-				this._ymove += (e.clientY - this._prevY);
-		
-				this._ymove = Math.max(-1000, Math.min(1000, this._ymove));
-			}
-			this._prevX = e.clientX;
-			this._prevY = e.clientY;
-		})
-	}
+    _Initialize() {
+        // WASD
+        window.addEventListener('keydown', (e) => {
+            let v = new Three.Vector3();
+            v.copy(this._target).sub(this._camera.position);
 
-	_Update(){
-		let u = new Three.Vector3();
-		u.copy(this._target).sub(this._camera.position);
-		let v = new Three.Vector3(0, 1, 0);
-		let w = new Three.Vector3();
-		let initLength = u.length();
-		w.copy(u).cross(v);
+            let u = new Three.Vector3(0, 1, 0);
+            let w = new Three.Vector3();
+            w.copy(v).cross(u)
 
-		let add1 = new Three.Vector3();
-		add1.copy(w).multiplyScalar(0.01 * this._xmove);
-		this._xmove = 0;
-		this._target.add(add1)
+            v.multiplyScalar(0.01);
+            w.multiplyScalar(0.01);
 
-		let w2 = new Three.Vector3();
-		w2.copy(u).cross(w);
+            if (e.key == 'w') {
+                this._camera.position.add(v);
+                this._target.add(v);
+            }
+            if (e.key == 's') {
+                this._camera.position.sub(v);
+                this._target.sub(v);
+            }
+            if (e.key == 'a') {
+                this._camera.position.sub(w);
+                this._target.sub(w);
+            }
+            if (e.key == 'd') {
+                this._camera.position.add(w);
+                this._target.add(w);
+            }
+        });
 
-		let add2 = new Three.Vector3();
-		add2.copy(w2).multiplyScalar(0.00005 * this._ymove);
-		this._ymove = 0;
-		this._target.add(add2);
+        // Left & Right View
+        window.addEventListener('mousedown', (e) => {
+            this._isHold = true;
+        })
+        window.addEventListener('mouseup', (e) => {
+            this._isHold = false;
+        })
+        window.addEventListener('mousemove', (e) => {
+            if (this._isHold) {
+                this._xmove += (e.clientX - this._prevX);
+                this._ymove += (e.clientY - this._prevY);
 
-		let u2 = new Three.Vector3();
-		u2.copy(this._target).sub(this._camera.position);
-		let mul = initLength / u2.length();
-		let add3 = new Three.Vector3();
-		add3.copy(u2).multiplyScalar(mul);
+                this._ymove = Math.max(-1000, Math.min(1000, this._ymove));
+            }
+            this._prevX = e.clientX;
+            this._prevY = e.clientY;
+        })
+    }
 
-		this._target.copy(this._camera.position).add(add3);
+    _Update() {
+        let u = new Three.Vector3();
+        u.copy(this._target).sub(this._camera.position);
+        let v = new Three.Vector3(0, 1, 0);
+        let w = new Three.Vector3();
+        let initLength = u.length();
+        w.copy(u).cross(v);
 
-		this._camera.lookAt(this._target);
+        let add1 = new Three.Vector3();
+        add1.copy(w).multiplyScalar(0.01 * this._xmove);
+        this._xmove = 0;
+        this._target.add(add1)
 
-		console.log(`Camera position = x:${this._camera.position.x} y:${this._camera.position.y} z:${this._camera.position.z}`);
-		console.log(`Camera look at = x:${this._target.x} y:${this._target.y} z:${this._target.z}`);
-	}
+        let w2 = new Three.Vector3();
+        w2.copy(u).cross(w);
+
+        let add2 = new Three.Vector3();
+        add2.copy(w2).multiplyScalar(0.00005 * this._ymove);
+        this._ymove = 0;
+        this._target.add(add2);
+
+        let u2 = new Three.Vector3();
+        u2.copy(this._target).sub(this._camera.position);
+        let mul = initLength / u2.length();
+        let add3 = new Three.Vector3();
+        add3.copy(u2).multiplyScalar(mul);
+
+        this._target.copy(this._camera.position).add(add3);
+        this._camera.lookAt(this._target);
+
+        // console.log(`Camera position = x:${this._camera.position.x} y:${this._camera.position.y} z:${this._camera.position.z}`);
+        // console.log(`Camera look at = x:${this._target.x} y:${this._target.y} z:${this._target.z}`);
+    }
 }
 
 const renderer = new Three.WebGLRenderer({ antialias: true });
@@ -121,7 +120,7 @@ const camera = new Three.PerspectiveCamera(
 // const controls = new OrbitControls( camera, renderer.domElement );
 const positions = {
     collision: { x: -1.2, y: 1.2, z: 2 },
-    home: { x: 0.4, y: 50, z: 100 },
+    home: { x: 32.137148559873054, y: 10.934339507232652, z: -11.06945160231319 },
     aboutUs: { x: -3, y: 1.8, z: 0 },
     signUp: { x: 1, y: 1.4, z: 0.4 },
     coba: { x: 0.29, y: 1.2, z: 0.2 },
@@ -133,150 +132,76 @@ const rotations = {
     signUp: { x: 0, y: 0, z: 0 },
     coba: { x: 0, y: 1.57, z: 0 },
 };
-
-// const helper = new Three.CameraHelper(camera);
-// scene.add(helper);
-// const axesHelper = new Three.AxesHelper(100);
-// scene.add(axesHelper);
-
+//Camera position = x:32.137148559873054 y:10.934339507232652 z:-11.06945160231319
 camera.position.set(positions.home.x, positions.home.y, positions.home.z);
-// camera.rotation.set(rotations.home.x, rotations.home.y, rotations.home.z);
+camera.rotation.set(rotations.home.x, rotations.home.y, rotations.home.z);
 camera.lookAt(0, 0, 0);
 let cameraController = new CameraController(camera, cameraTarget);
 
-const light = new Three.DirectionalLight(0xffffff, 1);
-light.position.set(2, 10, 7.5);
+const light = new Three.DirectionalLight(0xD3D3D3,1.5);
+light.position.set(3, 13, 12);
 scene.add(light);
 
-const ambientLight = new Three.AmbientLight(0xffffff, 0.15);
-scene.add(ambientLight);
+//lampu 1
+var geometry = new Three.CylinderGeometry(0.22, 4, 10, 18, 1, true);
+var material = new Three.MeshStandardMaterial({ color: 0xDD6CFF, side: Three.DoubleSide, opacity: 0.15, transparent: true });
+
+var mesh = new Three.Mesh(geometry, material);
+mesh.position.set(-1.55, 5.7, 20.1);
+scene.add(mesh);
+
+var houseLight1 = new Three.PointLight(0xE900D6, 200);
+houseLight1.position.set(20, 5.7,2.2);
+houseLight1.castShadow = true;
+scene.add(houseLight1);
+
+
+var lampukecil1 = new Three.PointLight(0xE900D6,1);
+lampukecil1.position.set(17.8, 4, -17);
+lampukecil1.castShadow = true;
+scene.add(lampukecil1);
+var lampukecil3 = new Three.PointLight(0xDD6CFF,140);
+lampukecil3.position.set(20.01017070369093, 10.256380149234019, -4.857129217538916);
+lampukecil3.castShadow = true;
+scene.add(lampukecil3);
+var lampukecil4 = new Three.PointLight(0xDD6CFF,140);
+lampukecil4.position.set(20.01017070369093, 10.256380149234019, -10.857129217538916);
+lampukecil4.castShadow = true;
+scene.add(lampukecil4);
+var lampugarasi = new Three.PointLight(0x0C17EF,20);
+lampugarasi.position.set(20, 1.5, -6);
+lampugarasi.castShadow = true;
+scene.add(lampugarasi);
+
+var lampucafe = new Three.PointLight(0x0C17EF,140);
+lampucafe.position.set(10, 8, 11);
+scene.add(lampucafe);
+
+// const geometrya = new Three.BoxGeometry( 1, 1, 1 );
+// const materiala = new Three.MeshBasicMaterial( { color: 0xffff00 } );
+// const mesha = new Three.Mesh( geometrya, materiala );
+// mesha.position.set(10, 8, 11);
+// scene.add( mesha );
+
+scene.fog = new Three.Fog(0x0C17EF, 0, 90);
 
 let mod;
 const gltfLoader = new GLTFLoader();
-const excludedObjectNames = ['Plane019_Material010_0', 'Plane005__0'];
-const boundingBoxes = [];
-
-gltfLoader.load("./cobaobject/untitled.gltf", (gltf) => {
+let mixer;
+gltfLoader.load("./coba6/untitled.gltf", (gltf) => {
     const model = gltf.scene;
     scene.add(model);
     mod = model;
-    model.traverse((object) => {
-        if (object.isMesh) {
-            if (excludedObjectNames.includes(object.name)) {
-                object.excludeFromCollision = true;
-            }
-
-            const box = new Three.Box3().setFromObject(object);
-            boundingBoxes.push({ box: box, exclude: object.excludeFromCollision || false });
-            // const color = object.excludeFromCollision ? 0xff0000 : 0xffff00;
-            // const helper = new Three.Box3Helper(box, color);
-            // scene.add(helper);
-
-            // console.log('Object name:', object.name);
-        }
+    mixer = new Three.AnimationMixer(model);
+    gltf.animations.forEach((clip) => {
+        mixer.clipAction(clip).play();
     });
-
-    document.getElementById('beranda-link').addEventListener('click', (event) => {
-        event.preventDefault();
-        if (!cameraMoving) {
-            moveCameraAndCheckCollision(positions.coba, rotations.coba);
-        }
-    });
-    document.getElementById('about-us-link').addEventListener('click', (event) => {
-        event.preventDefault();
-        if (!cameraMoving) {
-            moveCameraAndCheckCollision(positions.aboutUs, rotations.aboutUs);
-        }
-    });
-    document.getElementById('sign-up-link').addEventListener('click', (event) => {
-        event.preventDefault();
-        if (!cameraMoving) {
-            moveCameraAndCheckCollision(positions.signUp, rotations.signUp);
-        }
-    });
-
-    function moveCameraAndCheckCollision(targetPosition, targetRotation) {
-        const newCameraPosition = new Three.Vector3(targetPosition.x, targetPosition.y, targetPosition.z);
-        const cameraBox = new Three.Box3().setFromCenterAndSize(newCameraPosition, new Three.Vector3(1, 1, 1));
-
-        let collision = false;
-        for (const { box, exclude } of boundingBoxes) {
-            if (!exclude && cameraBox.intersectsBox(box)) {
-                collision = true;
-                break;
-            }
-        }
-        console.log('Collision detected:', collision);
-
-        if (!collision) {
-            movecamera(targetPosition.x, targetPosition.y, targetPosition.z);
-            rotatecamera(targetRotation.x, targetRotation.y, targetRotation.z);
-        }
-    }
-    // function moveCameraAndCheckCollision(targetPosition, targetRotation) {
-    //     cameraMoving = true;
-
-    //     gsap.to(camera.position, {
-    //         duration: 5,
-    //         x: targetPosition.x,
-    //         y: targetPosition.y,
-    //         z: targetPosition.z,
-    //         onUpdate: function () {
-    //             const cameraBox = new Three.Box3().setFromCenterAndSize(camera.position, new Three.Vector3(1, 1, 1));
-    //             let collision = false;
-
-    //             for (const { box, exclude } of boundingBoxes) {
-    //                 if (!exclude && cameraBox.intersectsBox(box)) {
-    //                     collision = true;
-    //                     break;
-    //                 }
-    //             }
-
-    //             if (collision) {
-    //                 gsap.killTweensOf(camera.position);
-    //                 gsap.killTweensOf(camera.rotation);
-    //                 moveCameraAndCheckCollision(positions.collision, rotations.collision);
-    //             }
-    //         },
-    //         onComplete: function () {
-    //             cameraMoving = false;
-    //         }
-    //     });
-
-    //     gsap.to(camera.rotation, {
-    //         duration: 7,
-    //         x: targetRotation.x,
-    //         y: targetRotation.y,
-    //         z: targetRotation.z,
-    //     });
-    // }
-
-    function movecamera(x, y, z) {
-        cameraMoving = true;
-        gsap.to(camera.position, {
-            duration: 5,
-            x: x,
-            y: y,
-            z: z,
-            onComplete: function () {
-                cameraMoving = false;
-            }
-        });
-    }
-
-    function rotatecamera(x, y, z) {
-        gsap.to(camera.rotation, {
-            duration: 7,
-            x: x,
-            y: y,
-            z: z
-        });
-    }
 });
-
+    
 function animate(time) {
     renderer.render(scene, camera);
     cameraController._Update();
+    if (mixer) mixer.update(0.01); 
 }
 renderer.setAnimationLoop(animate);
 
@@ -294,7 +219,7 @@ const audioLoader = new Three.AudioLoader();
 audioLoader.load('./src/assets/keempat.mp3', function (buffer) {
     sound.setBuffer(buffer);
     sound.setLoop(true);
-    sound.setVolume(0);
+    sound.setVolume(0.2);
 });
 
 function startAudio() {
