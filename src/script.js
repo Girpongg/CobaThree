@@ -120,7 +120,7 @@ const camera = new Three.PerspectiveCamera(
 // const controls = new OrbitControls( camera, renderer.domElement );
 const positions = {
     collision: { x: -1.2, y: 1.2, z: 2 },
-    home: { x: 32.137148559873054, y: 10.934339507232652, z: -11.06945160231319 },
+    home: { x: -5.73112146711478, y: 4.166126922183551, z: 23.027298999785387 },
     aboutUs: { x: -3, y: 1.8, z: 0 },
     signUp: { x: 1, y: 1.4, z: 0.4 },
     coba: { x: 0.29, y: 1.2, z: 0.2 },
@@ -138,42 +138,45 @@ camera.rotation.set(rotations.home.x, rotations.home.y, rotations.home.z);
 camera.lookAt(0, 0, 0);
 let cameraController = new CameraController(camera, cameraTarget);
 
-const light = new Three.DirectionalLight(0xD3D3D3,1.5);
+const light = new Three.DirectionalLight(0xD3D3D3, 1.5);
 light.position.set(3, 13, 12);
 scene.add(light);
 
 //lampu 1
 var geometry = new Three.CylinderGeometry(0.22, 4, 10, 18, 1, true);
-var material = new Three.MeshStandardMaterial({ color: 0xDD6CFF, side: Three.DoubleSide, opacity: 0.15, transparent: true });
+var material = new Three.MeshStandardMaterial({
+    color: 0xDD6CFF, side: Three.DoubleSide, opacity: 0.15, transparent:
+        true
+});
 
 var mesh = new Three.Mesh(geometry, material);
 mesh.position.set(-1.55, 5.7, 20.1);
 scene.add(mesh);
 
 var houseLight1 = new Three.PointLight(0xE900D6, 200);
-houseLight1.position.set(20, 5.7,2.2);
+houseLight1.position.set(20, 5.7, 2.2);
 houseLight1.castShadow = true;
 scene.add(houseLight1);
 
 
-var lampukecil1 = new Three.PointLight(0xE900D6,1);
+var lampukecil1 = new Three.PointLight(0xE900D6, 1);
 lampukecil1.position.set(17.8, 4, -17);
 lampukecil1.castShadow = true;
 scene.add(lampukecil1);
-var lampukecil3 = new Three.PointLight(0xDD6CFF,140);
+var lampukecil3 = new Three.PointLight(0xDD6CFF, 140);
 lampukecil3.position.set(20.01017070369093, 10.256380149234019, -4.857129217538916);
 lampukecil3.castShadow = true;
 scene.add(lampukecil3);
-var lampukecil4 = new Three.PointLight(0xDD6CFF,140);
+var lampukecil4 = new Three.PointLight(0xDD6CFF, 140);
 lampukecil4.position.set(20.01017070369093, 10.256380149234019, -10.857129217538916);
 lampukecil4.castShadow = true;
 scene.add(lampukecil4);
-var lampugarasi = new Three.PointLight(0x0C17EF,20);
+var lampugarasi = new Three.PointLight(0x0C17EF, 20);
 lampugarasi.position.set(20, 1.5, -6);
 lampugarasi.castShadow = true;
 scene.add(lampugarasi);
 
-var lampucafe = new Three.PointLight(0x0C17EF,140);
+var lampucafe = new Three.PointLight(0x0C17EF, 140);
 lampucafe.position.set(10, 8, 11);
 scene.add(lampucafe);
 
@@ -188,7 +191,7 @@ scene.fog = new Three.Fog(0x0C17EF, 0, 90);
 let mod;
 const gltfLoader = new GLTFLoader();
 let mixer;
-gltfLoader.load("./coba6/untitled.gltf", (gltf) => {
+gltfLoader.load("./coba9/untitled.gltf", (gltf) => {
     const model = gltf.scene;
     scene.add(model);
     mod = model;
@@ -197,11 +200,11 @@ gltfLoader.load("./coba6/untitled.gltf", (gltf) => {
         mixer.clipAction(clip).play();
     });
 });
-    
+
 function animate(time) {
     renderer.render(scene, camera);
     cameraController._Update();
-    if (mixer) mixer.update(0.01); 
+    if (mixer) mixer.update(0.01);
 }
 renderer.setAnimationLoop(animate);
 
@@ -237,3 +240,120 @@ document.addEventListener('touchstart', startAudio);
 document.body.style.margin = 0;
 document.body.style.overflow = "hidden";
 renderer.domElement.style.display = "block";
+
+//hitbox
+const aboutMeBoxes = new Three.Group()
+const hitBoxMaterial = new Three.MeshBasicMaterial({ color: 0xff0000, wireframe: true })
+const aboutMeHitBoxGeometry = new Three.PlaneGeometry(1, 0.35)
+
+const day1 = new Three.Mesh(
+    aboutMeHitBoxGeometry,
+    hitBoxMaterial
+)
+day1.position.set(-7.3, 3.4, 14.1)
+// day1.visible = false
+
+const day2 = new Three.Mesh(
+    aboutMeHitBoxGeometry,
+    hitBoxMaterial
+)
+day2.position.set(-7.3, 2.9, 14.1)
+// day2.visible = false
+
+const day3 = new Three.Mesh(
+    aboutMeHitBoxGeometry,
+    hitBoxMaterial
+)
+day3.position.set(-7.3, 2.4, 14.1)
+// day3.visible = false
+
+const day4 = new Three.Mesh(
+    aboutMeHitBoxGeometry,
+    hitBoxMaterial
+)
+day4.position.set(-7.3, 1.9, 14.1)
+// day4.visible = false
+
+const day5 = new Three.Mesh(
+    aboutMeHitBoxGeometry,
+    hitBoxMaterial
+)
+day5.position.set(-7.3, 1.4, 14.1)
+// day5.visible = false
+
+aboutMeBoxes.add(day1, day2, day3, day4, day5)
+
+scene.add(aboutMeBoxes)
+const objectsToTest = [
+    day1,
+    day2,
+    day3,
+    day4,
+    day5
+]
+objectsToTest.push(
+    aboutMeBoxes
+)
+const touchedPoints = [];
+let cursor = new Three.Vector2();
+let cursorXMin, cursorXMax, cursorYMin, cursorYMax;
+let absX, absY;
+
+window.addEventListener('pointerdown', (event) => {
+    touchedPoints.push(event.pointerId);
+
+    cursorXMin = Math.abs((event.clientX / window.innerWidth * 2 - 1) * 0.9);
+    cursorXMax = Math.abs((event.clientX / window.innerWidth * 2 - 1) * 1.1);
+
+    cursorYMin = Math.abs((event.clientY / window.innerHeight * 2 - 1) * 0.9);
+    cursorYMax = Math.abs((event.clientY / window.innerHeight * 2 - 1) * 1.1);
+});
+
+window.addEventListener('pointerup', (event) => {
+    cursor.x = event.clientX / window.innerWidth * 2 - 1;
+    cursor.y = - (event.clientY / window.innerHeight) * 2 + 1;
+
+    absX = Math.abs(cursor.x);
+    absY = Math.abs(cursor.y);
+
+    if (touchedPoints.length === 1 &&
+        absX > cursorXMin && absX < cursorXMax &&
+        absY > cursorYMin && absY < cursorYMax) {
+
+        click(cursor);
+
+        touchedPoints.length = 0;
+    } else {
+        touchedPoints.length = 0;
+    }
+});
+const raycaster = new Three.Raycaster();
+const cameraInstance = camera;
+
+function click(cursor) {
+    raycaster.setFromCamera(cursor, cameraInstance);
+
+    const intersectsObjects = raycaster.intersectObjects(objectsToTest);
+    if (intersectsObjects.length) {
+        const selectedModel = intersectsObjects[0].object;
+
+        switch (selectedModel) {
+            case day1:
+                console.log("day1")
+                break;
+            case day2:
+                console.log("day2")
+                break;
+            case day3:
+                console.log("day3")
+                break;
+            case day4:
+                console.log("day4")
+                break;
+            case day5:
+                console.log("day5")
+                break;
+        }
+    }
+}
+
