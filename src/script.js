@@ -97,8 +97,8 @@ class CameraController {
         this._target.copy(this._camera.position).add(add3);
         this._camera.lookAt(this._target);
 
-        // console.log(`Camera position = x:${this._camera.position.x} y:${this._camera.position.y} z:${this._camera.position.z}`);
-        // console.log(`Camera look at = x:${this._target.x} y:${this._target.y} z:${this._target.z}`);
+        console.log(`Camera position = x:${this._camera.position.x} y:${this._camera.position.y} z:${this._camera.position.z}`);
+        console.log(`Camera look at = x:${this._target.x} y:${this._target.y} z:${this._target.z}`);
     }
 }
 
@@ -120,7 +120,7 @@ const camera = new Three.PerspectiveCamera(
 // const controls = new OrbitControls( camera, renderer.domElement );
 const positions = {
     collision: { x: -1.2, y: 1.2, z: 2 },
-    home: { x: -5.73112146711478, y: 4.166126922183551, z: 23.027298999785387 },
+    home: {x:-9.633109293423729, y:5.206253333188245, z:30.20936432677548},
     aboutUs: { x: -3, y: 1.8, z: 0 },
     signUp: { x: 1, y: 1.4, z: 0.4 },
     coba: { x: 0.29, y: 1.2, z: 0.2 },
@@ -132,6 +132,7 @@ const rotations = {
     signUp: { x: 0, y: 0, z: 0 },
     coba: { x: 0, y: 1.57, z: 0 },
 };
+//x:-9.633109293423729 y:5.206253333188245 z:30.20936432677548
 //Camera position = x:32.137148559873054 y:10.934339507232652 z:-11.06945160231319
 camera.position.set(positions.home.x, positions.home.y, positions.home.z);
 camera.rotation.set(rotations.home.x, rotations.home.y, rotations.home.z);
@@ -198,6 +199,9 @@ gltfLoader.load("./coba9/untitled.gltf", (gltf) => {
     mixer = new Three.AnimationMixer(model);
     gltf.animations.forEach((clip) => {
         mixer.clipAction(clip).play();
+    });
+    model.traverse((child) => {
+        console.log(child.material);
     });
 });
 
@@ -339,13 +343,13 @@ function click(cursor) {
 
         switch (selectedModel) {
             case day1:
-                console.log("day1")
+                changeTexture('day1');
                 break;
             case day2:
-                console.log("day2")
+                changeTexture('day2');
                 break;
             case day3:
-                console.log("day3")
+                changeTexture('day3'); 
                 break;
             case day4:
                 console.log("day4")
@@ -356,4 +360,59 @@ function click(cursor) {
         }
     }
 }
+const loader = new Three.TextureLoader();
+const textures = {
+    day1: loader.load('coba9/ccc.png'),
+    day2: loader.load('coba9/garasi.jpg'),
+    day3: loader.load('coba9/duatiga.png'),
+};
+
+const geometrys = new Three.PlaneGeometry(5.2, 3);
+const materials = new Three.MeshBasicMaterial({ map: textures.day1 });
+const textureMesh = new Three.Mesh(geometrys, materials);
+textureMesh.position.set(-5.3, 2.5, 14.1);
+scene.add(textureMesh);
+
+
+function changeTexture(day) {
+    textureMesh.material.map = textures[day];
+    textureMesh.material.needsUpdate = true;
+}
+
+// screenTransition(material, newTexture, duration,)
+// {
+//     material.uniforms.texture2.value = newTexture
+//     gsap.to(material.uniforms.progress, {        
+//         value: 1,
+//         duration: duration,
+//         ease: "power1.inOut",
+//         onComplete: () => {
+//             material.uniforms.texture1.value = newTexture
+//             material.uniforms.progress.value = 0
+//         }
+//     })
+// }
+
+// bigScreenTransition(material, newTexture, duration, toDefault)
+// {
+//     material.uniforms.uTexture2IsDefault.value = toDefault ? 1 : 0
+
+//     material.uniforms.uTexture2.value = newTexture
+//     gsap.to(material.uniforms.uProgress, {
+//         value: 1,
+//         duration: duration,
+//         ease: "power1.inOut",
+//         onComplete: () => {
+//             material.uniforms.uTexture1IsDefault.value = toDefault ? 1 : 0
+//             material.uniforms.uTexture1.value = newTexture
+//             material.uniforms.uProgress.value = 0
+
+//         }
+//     })
+// }
+
+// sleep(ms)
+// {
+//     return new Promise(resolve => setTimeout(resolve, ms));
+// }
 
