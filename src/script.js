@@ -14,6 +14,29 @@ class CameraController {
         this._prevY = 0;
         this._isHold = false;
 
+        this._positionState = 0;
+        this._isCameraMove = false;
+        this._positions = 
+        {
+            home: {x:35.61729525863302, y:11.859589130052475, z:-5.118022422950115},
+            about: {x:7.932559571249098, y:2.2810136110825003, z:19.81778795314402},
+            about_out: {x:10.458472412218109, y:1.5681570051147102, z:29.318561018826923},
+            timeline: {x:-5.028683072664165, y:2.0692772821455487, z:18.102144996367322},
+            timeline_out: {x:-8.755370410598227, y:1.5513093949631322, z:28.87635538214861},
+            login: {x:15.609794984978292, y:3.60666473891604, z:12.600139452444894},
+            login_out: {x:28.688904378765656, y:1.6949788584605308, z:17.58892246844016},
+        }
+        this._lookPositions = 
+        {
+            home: {x:-5.9656840429284586, y:4.434269327793475, z:-1.1531191151660933},
+            about: {x:7.564250758574618, y:5.826297156905862, z:-22.45862761390972},
+            about_out: {x:-1.9743668083153043, y:5.610995188499668, z:-11.043301776878419},
+            timeline: {x:-5.23249875491511, y:6.487939885618854, z:-24.093042880502516},
+            timeline_out: {x:8.111738625898235, y:3.051636278037684, z:-10.024154280256546},
+            login: {x:-26.10931310059165, y:-4.034070271605513, z:13.665591958901086},
+            login_out: {x:-12.117434450661307, y:-0.24537785241798105, z:6.140004302405806},
+        }
+
         this._Initialize();
     }
 
@@ -65,6 +88,48 @@ class CameraController {
             this._prevX = e.clientX;
             this._prevY = e.clientY;
         })
+
+        // Navbar
+        let homeEle = document.getElementById("home-link");
+        let aboutEle = document.getElementById("about-link");
+        let timelineEle = document.getElementById("timeline-link");
+        let loginEle = document.getElementById("login-link");
+
+        homeEle.addEventListener('click', ()=>{
+            if(this._positionState === 0 || this._isCameraMove) return;
+            this._isCameraMove = true;
+            this.moveCameraTo(this._positions.home, this._lookPositions.home);
+            setTimeout(() => { this._isCameraMove = false; }, 3000);
+            this._positionState = 0;
+        })
+        aboutEle.addEventListener('click', ()=>{
+            if(this._positionState === 1 || this._isCameraMove) return;
+            this._isCameraMove = true;
+            this.moveCameraTo(this._positions.about_out, this._lookPositions.about_out);
+            setTimeout(() => this.moveCameraTo(this._positions.about, this._lookPositions.about), 3000);
+            setTimeout(() => { this._isCameraMove = false; }, 6000);
+            this._positionState = 1;
+        });
+        timelineEle.addEventListener('click', ()=>{
+            if(this._positionState === 2 || this._isCameraMove) return;
+            this._isCameraMove = true;
+            this.moveCameraTo(this._positions.timeline_out, this._lookPositions.timeline_out);
+            setTimeout(() => this.moveCameraTo(this._positions.timeline, this._lookPositions.timeline), 3000);
+            setTimeout(() => { this._isCameraMove = false; }, 6000);
+            this._positionState = 2;
+        });
+        loginEle.addEventListener('click', ()=>{
+            if(this._positionState === 3 || this._isCameraMove) return;
+            this._isCameraMove = true;
+            this.moveCameraTo(this._positions.login_out, this._lookPositions.login_out);
+            setTimeout(() => this.moveCameraTo(this._positions.login, this._lookPositions.login), 3000);
+            setTimeout(() => { this._isCameraMove = false; }, 6000);
+            this._positionState = 3;
+        });
+
+        // Set initial camera position
+        this.setCameraTo(this._positions.home, this._lookPositions.home);
+        this._positionState = 0;
     }
 
     _Update() {
@@ -97,8 +162,22 @@ class CameraController {
         this._target.copy(this._camera.position).add(add3);
         this._camera.lookAt(this._target);
 
-        console.log(`Camera position = x:${this._camera.position.x} y:${this._camera.position.y} z:${this._camera.position.z}`);
-        console.log(`Camera look at = x:${this._target.x} y:${this._target.y} z:${this._target.z}`);
+        // console.log(this._target);
+        // console.log(`Camera position = {x:${this._camera.position.x}, y:${this._camera.position.y}, z:${this._camera.position.z}},`);
+        // console.log(`Camera look at = {x:${this._target.x}, y:${this._target.y}, z:${this._target.z}},`);
+    }
+
+    setCameraTo(pos, lookPos){
+        this._camera.position.set(pos.x, pos.y, pos.z);
+        this._target = new Three.Vector3(lookPos.x, lookPos.y, lookPos.z);
+    }
+    moveCameraTo(pos, lookPos, duration=3){
+        gsap.to(this._camera.position, {
+            x: pos.x, y:pos.y, z:pos.z, duration:duration,
+        });
+        gsap.to(this._target, {
+            x: lookPos.x, y:lookPos.y , z:lookPos.z, duration:duration,
+        });
     }
 }
 
@@ -108,8 +187,6 @@ renderer.setPixelRatio(window.devicePixelRatio);
 document.body.appendChild(renderer.domElement);
 
 const scene = new Three.Scene();
-let cameraMoving = false;
-let cameraTarget = new Three.Vector3(0, 0, 0);
 
 const camera = new Three.PerspectiveCamera(
     75,
@@ -117,27 +194,29 @@ const camera = new Three.PerspectiveCamera(
     0.1,
     1000
 );
+let cameraTarget = new Three.Vector3(0, 0, 0);
+let cameraController = new CameraController(camera, cameraTarget);
+
 // const controls = new OrbitControls( camera, renderer.domElement );
-const positions = {
-    collision: { x: -1.2, y: 1.2, z: 2 },
-    home: {x:-9.633109293423729, y:5.206253333188245, z:30.20936432677548},
-    aboutUs: { x: -3, y: 1.8, z: 0 },
-    signUp: { x: 1, y: 1.4, z: 0.4 },
-    coba: { x: 0.29, y: 1.2, z: 0.2 },
-};
-const rotations = {
-    collision: { x: 0, y: 0, z: 0 },
-    home: { x: 0, y: 0, z: 0 },
-    aboutUs: { x: 0, y: -1.6, z: 0 },
-    signUp: { x: 0, y: 0, z: 0 },
-    coba: { x: 0, y: 1.57, z: 0 },
-};
+// const positions = {
+//     collision: { x: -1.2, y: 1.2, z: 2 },
+//     home: {x:41.15930448397892, y:2.8992855672470395, z:5.868403930456852},
+//     aboutUs: { x: -3, y: 1.8, z: 0 },
+//     signUp: { x: 1, y: 1.4, z: 0.4 },
+//     coba: { x: 0.29, y: 1.2, z: 0.2 },
+// };
+// const rotations = {
+//     collision: { x: 0, y: 0, z: 0 },
+//     home: { x: 0, y: 0, z: 0 },
+//     aboutUs: { x: 0, y: -1.6, z: 0 },
+//     signUp: { x: 0, y: 0, z: 0 },
+//     coba: { x: 0, y: 1.57, z: 0 },
+// };
 //x:-9.633109293423729 y:5.206253333188245 z:30.20936432677548
 //Camera position = x:32.137148559873054 y:10.934339507232652 z:-11.06945160231319
-camera.position.set(positions.home.x, positions.home.y, positions.home.z);
-camera.rotation.set(rotations.home.x, rotations.home.y, rotations.home.z);
-camera.lookAt(0, 0, 0);
-let cameraController = new CameraController(camera, cameraTarget);
+// camera.position.set(positions.home.x, positions.home.y, positions.home.z);
+// camera.rotation.set(rotations.home.x, rotations.home.y, rotations.home.z);
+// camera.lookAt(0, 0, 0);
 
 const light = new Three.DirectionalLight(0xD3D3D3, 1.5);
 light.position.set(3, 13, 12);
@@ -201,7 +280,7 @@ gltfLoader.load("./coba9/untitled.gltf", (gltf) => {
         mixer.clipAction(clip).play();
     });
     model.traverse((child) => {
-        console.log(child.material);
+        // console.log(child.material);
     });
 });
 
